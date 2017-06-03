@@ -1,5 +1,5 @@
 vue是一个非常典型的MVVM框架，它的核心功能一是双向数据绑定系统，二是组件化开发系统。那么本文是以一种通俗易懂的的角度来实现一个简单
-的双向数据绑定系统，如果你用过vue却对vue的实现原理不太清楚，那我相信看完本文你会的vue的实现有一个比较简单明确的了解。不过如果哪块有
+的双向数据绑定系统，如果你用过vue却对vue的实现原理不太清楚，或者没用过vue想学习vue那我相信看完本文你会的vue的实现有一个比较简单明确的了解。不过如果哪块有
 错误，还望指出。
 ### 本文的实现目标：
 input标签和{{text}}的内容与data中的text值保持一致，实现双向绑定
@@ -83,8 +83,8 @@ input标签和{{text}}的内容与data中的text值保持一致，实现双向�
       }
   })
 ```
-最终达到的效果如下图：v-model绑定的input和{{text}}的值和data中的text保持一致
-
+最终达到的效果如下图：v-model绑定的input和{{text}}的值和data中的text保持一致<br/>
+![](https://github.com/coderzzp/vue-come-true/blob/master/img/QQ%E6%88%AA%E5%9B%BE20170603152333.jpg)<br/>
 ### Step2 : view→model的绑定.
 这一步的目标：当用户输入改变input的值(view层)时，反映到data中(model层)并改变对应的值<br/>
 方法：<br/>
@@ -156,13 +156,14 @@ input标签和{{text}}的内容与data中的text值保持一致，实现双向�
     }
   }
 ```
-那么step2完成了，当用户在input中输入值，data属性值也会发生改变，这样一来就完成了model→view的一个实现过程
-
+那么step2完成了，当用户在input中输入值，data属性值也会发生改变，这样一来就完成了model→view的一个实现过程<br/>
+![](https://github.com/coderzzp/vue-come-true/blob/master/img/QQ%E6%88%AA%E5%9B%BE20170603171244.jpg)<br/>
 ### Step3 : model→view的绑定
 诶不是之前已经绑定过一次model→view，怎么还要绑定？<br/>
 第一次绑定是初始化绑定，我们现在要完成的是，当用户改变data值，再回过头去改变view层，这里刚好可以用到一个设计模式：
-观察者模式-让多个观察者同时监听某一个主题对象，这个主题对象的状态发生改变时就会通知所有观察者对象。放到这里就是：
-每个data属性值在`defineReactive`函数监听处理的时候，添加一个主题对象，当data属性发生改变,通过set函数去通知所有的观察者们，
+观察者模式-让多个观察者同时监听某一个主题对象，这个主题对象的状态发生改变时就会通知所有观察者对象。<br/>
+![](https://github.com/coderzzp/vue-come-true/blob/master/img/925891-20161120160541513-1856723431.png)<br/>
+放到这里就是：每个data属性值在`defineReactive`函数监听处理的时候，添加一个主题对象，当data属性发生改变,通过set函数去通知所有的观察者们，
 那么如何添加观察者们呢，就是在`complie`函数编译node时，通过初始化value值，触发set函数，在set函数中为主题对象添加
 观察者。有点难理解？直接看代码就明白了。
 ```javascript
@@ -242,7 +243,9 @@ input标签和{{text}}的内容与data中的text值保持一致，实现双向�
     }
   }
 ```
-如此一来，一个简单的MVVM就实现了，不过这只是Vue的冰山一角，只是实现了一个v-model，陆陆续续会更新其他的操作和一些细节，敬请期待，如果你
+如此一来，一个简单的MVVM就实现了，思维导图如下：<br/>
+![](https://github.com/coderzzp/vue-come-true/blob/master/img/132184689-57b310ea1804f_articlex.png)<br/>
+不过这只是Vue的冰山一角，只是实现了一个v-model，陆陆续续会更新其他的操作和一些细节，敬请期待，如果你
 看完了并且有所收获不妨点个star(滑稽脸)
 
 
