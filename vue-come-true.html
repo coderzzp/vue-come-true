@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <input type="text" v-model="text">
+    {{text}}
+  </div>
+</body>
+<script type="text/javascript">
+
+////////////////////
+//将结点劫持
+  function node2Fragment(node,vm){
+    var flag=document.createDocumentFragment();
+    var child;
+    while(child=node.firstChild){
+      //编译每个节点
+      compile(child,vm)
+      flag.appendChild(child)
+    }
+    return flag
+  }
+  //编译虚拟dom的辅助函数
+  function compile(node,vm){
+    var reg=/\{\{(.*)\}\}/;
+    if(node.nodeType===1){
+      var attr=node.attributes;
+      for(var i=0;i<attr.length;i++){
+        if(attr[i].nodeName=='v-model'){
+          var name=attr[i].nodeValue;
+          node.addEventListener('input',function(e){
+            vm[name]=e.target.value;
+          })
+          //这里是很重要的一块：为什么不用vm.data[name],因为已经给vm实例设置了text访问器属性，所以即使vm实例的第一层没有text这个属性（第一层是data属性），也可以访问到text
+            // var data={
+            //   fuck:{
+            //     data1:'111',
+            //     data2:'222'
+            //   }
+            // }
+            // Object.defineProperty(data,"whaterver",{
+            //   get:function(){
+            //     return "????"
+            //   },
+            //   set:function(newVal){
+            //     return "!!!!"
+            //   }
+            // })
+            // console.log(data.whaterver)//????
+          node.value=vm[name];
+        }
+      }
+    };
+    if(node.nodeType===3){
+      if(reg.test(node.nodeValue)){
+        var name=RegExp.$1;
+        name=name.trim();
+        //初始化数据并且触发get函数
+        new Watcher(vm,node,name);
+      }
+    }
+  }
+  //定义订阅者类
+  function Watcher(vm,node,name){
+    //Dep.target存储了当前的观察者，使get函数能够存储观察者
+    Dep.target=this;
+    this.name=name;
+    this.node=node;
+    this.vm=vm;
+    //订阅者执行一次更新视图
+    this.update();
+    Dep.target=null;
+  }
+  Watcher.prototype={
+    update:function(){
+      //触发set函数
+      this.get();
+      this.node.nodeValue=this.value;
+    },
+    get:function(){
+      this.value=this.vm[this.name]//触发对应数据的get方法
+    }
+  }
+  //响应式的数据绑定函数
+  function defineReactive(obj,key,val){
+    //定义一个主题实例
+    var dep=new Dep()
+    Object.defineProperty(obj,key,{
+      get:function(){
+        //添加订阅者watcher到主题对象Dep
+        if(Dep.target)dep.addSub(Dep.target)
+        return val
+      },
+      set:function(newVal){
+        if(newVal===val)return ;
+        val=newVal;
+        //实例发出通知（更新所有订阅了这个属性消息的view）
+        dep.notify();
+      }
+    })
+  }
+  function Dep(){
+    //主题的订阅者们
+    this.subs=[];
+  }
+  Dep.prototype={
+    //添加订阅者的方法
+    addSub:function(sub){
+      this.subs.push(sub);
+    },
+    //发布信息的方法（让订阅者watcher们全部更新view）
+    notify:function(){
+      this.subs.forEach(function(sub){
+        sub.update();
+      })
+    }
+  }
+  //监听vm这个对象的obj有的属性
+  function observe(obj,vm){
+    Object.keys(obj).forEach(function(key){
+      console.log(vm)
+      defineReactive(vm,key,obj[key])
+    })
+  }
+  //构建Vue对象
+  function Vue(options){
+    this.data=options.data;
+    var id=options.el;
+    var data=this.data
+    //监听this(即vm)这个对象的data属性
+    observe(data,this)
+    var dom=node2Fragment(document.getElementById(id),this);
+    document.getElementById(id).appendChild(dom);
+  }
+  var vm=new Vue({
+    el:'app',
+    data:{
+      text:'hello world',
+      fuck:'fuckingboy'
+    }
+  })
+  console.log(vm)
+</script>
+</html>
