@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>双向绑定</title>
+    <style type="text/css">
+        .red{
+            color: red
+        }
+    </style>
+</head>
+
+<body>
+
+<!--     <div id="app">
+        <input type="text" v-model="firstName">
+        <input type="text" v-model="htmlStr">
+        <p v-text="firstName"></p>
+        <p>
+            {{firstName}}{{array.length}}
+        </p>
+        <p v-html="htmlStr"></p>
+        <button v-on:click="clickBtn">改变数组内容</button>
+        <button v-on:click="addItem(firstName)">数组增加长度</button>
+        <ul>
+            <li v-for="item in array" class="list-item">{{item}}</li>
+        </ul>
+        <p>{{array.length}}</p>  
+    </div> -->
+    <div id="app">
+        <p>
+            <h3>v-model</h3>
+            <input type="text" v-model="formodel">
+            {{formodel}}
+        </p>
+        <p>
+            <h3>v-text</h3>
+            <p v-text="fortext"></p>
+            {{fortext}}
+        </p>
+        <p>
+            <h3>v-html</h3>
+            <p v-html="forhtml"></p>
+            {{{forhtml}}}
+        </p>
+         <p>
+            <h3>v-on</h3>
+            <button v-on:click="changeclass">点击更换颜色</button>
+        </p>
+         <p>
+            <h3>v-class</h3>
+            <p v-class="red">我是v-绑定了red的标签文字</p>
+            <button v-on:click="changeclass">点击更换颜色</button>
+        </p>
+         <p>
+            <h3>v-for</h3>
+            <ul>
+               <li  v-for="item in array" >{{item}}</li> 
+            </ul>
+        </p>
+        <button v-on:click="change">vue无法监听下标改变数组</button>
+        <button v-on:click="addItem('1111')">用push给数组增加长度</button>
+<!--          <p>
+            <h3>v-for</h3>
+            <ul>
+                <li v-for="item in array">{{item}}</li>
+            </ul>
+        </p> -->
+    </div>
+</body>
+    <script src="./dist/js/main.bundle.js"></script>
+    <script>
+    let vm=new MVVM({
+        el:'#app',
+        data:{
+            formodel:'this is for v-model',
+            fortext:'this is for v-text',
+            forhtml:'<span style="color: #f00;">我是v-html指令的结果</span><span></spam>',
+            red:'red',
+            array: ["sdf","sdfd"]
+        },
+        methods:{
+            changeclass:function(e){
+                var rand=Math.round(Math.random()*1000000);
+                console.log(e.target.previousSibling.previousSibling)
+                e.target.style.backgroundColor ='#'+rand
+            },
+            addItem: function (value) {
+                this.array.push(value);
+                console.log(this.array);
+            },
+            change:function(){
+                this.array[0]="vue无法监听到这次改变"
+            }
+        }
+    })
+
+        // console.log(rand)
+        // let vm = new MVVM({
+        //     el: '#app',
+        //     data: {
+        //         firstName: "hello ",
+        //         htmlStr: '<span style="color: #f00;">我是v-html指令的结果</span><span></spam>',
+        //         child: {
+        //             lastName: ' World !'
+        //         },
+        //         array: ["sdf","sdfd"]
+        //     },
+        //     methods: {
+        //         clickBtn: function (e) {
+        //             this.array[0] = "dfsdf";
+        //         },
+        //         addItem: function (value) {
+        //             this.array.push(value);
+        //             console.log(this.array);
+        //         }
+        //     }
+        // });
+    </script>
+</html>
