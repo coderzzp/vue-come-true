@@ -94,7 +94,6 @@ input标签和{{text}}的内容与data中的text值保持一致，实现双向�
 这里我们先完成第二个点，通知数据改变，在全局中新添加两个函数
 ```javascript
   function defineReactive(obj,key,val){
-    //定义一个发布者
     Object.defineProperty(obj,key,{
       get:function(){
         return val
