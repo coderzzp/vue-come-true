@@ -12,7 +12,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
-                include: path.resolve(__dirname, './src/js'),
+                include: path.resolve(__dirname, './src/vue'),
                 exclude: [path.resolve(__dirname,'./node_modules'), path.resolve(__dirname,'./src/js/util.js')],
                 use: {
                     loader: 'babel-loader',
